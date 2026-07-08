@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — WF Tasks</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+<div class="auth-page">
+
+  <!-- ── Lado Esquerdo ────────────────────────────────────── -->
+  <div class="auth-left">
+    <div class="auth-brand">
+      <div class="auth-logo-wrap">
+        <img src="assets/logo.svg" alt="WF Tasks logo">
+        <span class="auth-logo-name">WF Tasks</span>
+      </div>
+      <p class="auth-tagline">Organize seu dia. Alcance seus objetivos.</p>
+
+      <!-- Ilustração SVG -->
+      <svg class="auth-illustration" viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- janela de app -->
+        <rect x="20" y="10" width="300" height="200" rx="12" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+        <!-- barra topo -->
+        <rect x="20" y="10" width="300" height="30" rx="12" fill="rgba(255,255,255,0.08)"/>
+        <circle cx="38" cy="25" r="5" fill="rgba(239,68,68,0.6)"/>
+        <circle cx="54" cy="25" r="5" fill="rgba(245,158,11,0.6)"/>
+        <circle cx="70" cy="25" r="5" fill="rgba(34,197,94,0.6)"/>
+        <rect x="100" y="18" width="140" height="14" rx="7" fill="rgba(255,255,255,0.08)"/>
+        <!-- sidebar -->
+        <rect x="20" y="40" width="60" height="170" rx="0 0 0 12" fill="rgba(255,255,255,0.04)"/>
+        <rect x="28" y="55" width="44" height="8" rx="4" fill="rgba(255,255,255,0.25)"/>
+        <rect x="28" y="70" width="36" height="6" rx="3" fill="rgba(255,255,255,0.12)"/>
+        <rect x="28" y="82" width="40" height="6" rx="3" fill="rgba(255,255,255,0.12)"/>
+        <rect x="28" y="94" width="32" height="6" rx="3" fill="rgba(255,255,255,0.12)"/>
+        <!-- colunas kanban -->
+        <!-- col 1 -->
+        <rect x="88" y="48" width="70" height="10" rx="4" fill="rgba(255,255,255,0.2)"/>
+        <rect x="88" y="62" width="70" height="40" rx="6" fill="rgba(255,255,255,0.09)"/>
+        <rect x="91" y="65" width="3" height="34" rx="1.5" fill="#EF4444" opacity="0.8"/>
+        <rect x="97" y="67" width="45" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="97" y="75" width="30" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+        <rect x="88" y="106" width="70" height="40" rx="6" fill="rgba(255,255,255,0.09)"/>
+        <rect x="91" y="109" width="3" height="34" rx="1.5" fill="#F59E0B" opacity="0.8"/>
+        <rect x="97" y="111" width="50" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="97" y="119" width="35" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+        <!-- col 2 -->
+        <rect x="166" y="48" width="70" height="10" rx="4" fill="rgba(255,255,255,0.2)"/>
+        <rect x="166" y="62" width="70" height="40" rx="6" fill="rgba(255,255,255,0.09)"/>
+        <rect x="169" y="65" width="3" height="34" rx="1.5" fill="#22C55E" opacity="0.8"/>
+        <rect x="175" y="67" width="40" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="175" y="75" width="55" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+        <!-- check verde -->
+        <circle cx="225" cy="85" r="8" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.5)" stroke-width="1"/>
+        <polyline points="221,85 224,88 229,82" stroke="#22C55E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- col 3 -->
+        <rect x="244" y="48" width="70" height="10" rx="4" fill="rgba(255,255,255,0.2)"/>
+        <rect x="244" y="62" width="70" height="40" rx="6" fill="rgba(255,255,255,0.09)"/>
+        <rect x="247" y="65" width="3" height="34" rx="1.5" fill="#3B82F6" opacity="0.8"/>
+        <rect x="253" y="67" width="50" height="5" rx="2" fill="rgba(255,255,255,0.4)"/>
+        <rect x="253" y="75" width="38" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+
+      <p class="auth-quote">"Gerencie suas tarefas com simplicidade e eficiência."</p>
+    </div>
+  </div>
+
+  <!-- ── Lado Direito ──────────────────────────────────────── -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <h1 class="auth-form-title">Bem-vindo de volta</h1>
+      <p class="auth-form-sub">Entre com sua conta para continuar.</p>
+
+      <div class="auth-card">
+        <div class="auth-error" id="loginError"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="auth-fields">
+
+            <div class="form-group">
+              <label class="form-label" for="loginEmail">E-mail</label>
+              <input
+                class="form-control"
+                type="email"
+                id="loginEmail"
+                placeholder="seu@email.com"
+                autocomplete="email"
+                required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="loginPwd">Senha</label>
+              <div class="pwd-wrap">
+                <input
+                  class="form-control"
+                  type="password"
+                  id="loginPwd"
+                  placeholder="••••••••"
+                  autocomplete="current-password"
+                  required>
+                <button type="button" class="pwd-toggle" onclick="togglePwd('loginPwd', this)">
+                  <svg id="eyeLogin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="remember-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="rememberMe"> Lembrar-me
+              </label>
+              <a href="#" class="forgot-link">Esqueci a senha</a>
+            </div>
+
+          </div>
+
+          <button type="submit" class="btn-auth">Entrar</button>
+        </form>
+
+        <p class="auth-switch">
+          Não tem conta? <a href="register.html">Cadastre-se grátis</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Redirecionar se já logado
+  WFAuth.redirectIfLoggedIn();
+
+  // Aplicar tema salvo
+  document.documentElement.setAttribute('data-theme', WFStorage.getTheme());
+
+  // Toggle senha
+  function togglePwd(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.innerHTML = show
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+           <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+           <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+           <line x1="1" y1="1" x2="23" y2="23"/>
+         </svg>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+           <circle cx="12" cy="12" r="3"/>
+         </svg>`;
+  }
+
+  // Submit
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const email  = document.getElementById('loginEmail').value.trim();
+    const pwd    = document.getElementById('loginPwd').value;
+    const errEl  = document.getElementById('loginError');
+
+    errEl.classList.remove('show');
+
+    const result = WFAuth.login(email, pwd);
+    if (result.success) {
+      window.location.href = 'index.html';
+    } else if (result.error === 'pending') {
+      errEl.innerHTML =
+        'Sua conta ainda não foi confirmada. ' +
+        '<a href="verify.html" style="color:var(--danger);font-weight:700;text-decoration:underline;">' +
+        'Confirmar cadastro →</a>';
+      errEl.classList.add('show');
+    } else {
+      errEl.textContent = result.error;
+      errEl.classList.add('show');
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WF Tasks — Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- gradiente do donut (relatórios) -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="donutGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%"   stop-color="#2563EB"/>
+        <stop offset="100%" stop-color="#7C3AED"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</head>
+<body>
+<div class="app">
+
+  <!-- ════════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/logo.svg" alt="WF Tasks">
+      <span class="sidebar-brand-name nav-label">WF Tasks</span>
+    </div>
+
+    <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Recolher menu">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="dashboard" title="Dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span class="nav-label">Dashboard</span>
+      </button>
+
+      <button class="nav-item" data-section="tasks" title="Tarefas">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        <span class="nav-label">Tarefas</span>
+      </button>
+
+      <button class="nav-item" data-section="calendar" title="Calendário">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="nav-label">Calendário</span>
+      </button>
+
+      <button class="nav-item" data-section="priorities" title="Prioridades">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+        <span class="nav-label">Prioridades</span>
+      </button>
+
+      <hr class="sidebar-divider">
+
+      <button class="nav-item" data-section="reports" title="Relatórios">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        <span class="nav-label">Relatórios</span>
+      </button>
+
+      <button class="nav-item" data-section="settings" title="Configurações">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span class="nav-label">Configurações</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="WFAuth.logout()" title="Sair">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span class="nav-label">Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- overlay mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ════════════════════════════════════════════════
+       ÁREA PRINCIPAL
+  ════════════════════════════════════════════════ -->
+  <div class="main-area">
+
+    <!-- ── Header ─────────────────────────────────── -->
+    <header class="app-header">
+      <button class="header-menu-btn" id="menuToggle" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <span class="header-page-title" id="pageTitle">Dashboard</span>
+
+      <div class="header-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Pesquisar tarefas…">
+      </div>
+
+      <div class="header-actions">
+        <!-- tema -->
+        <button class="header-icon-btn" id="themeToggle" title="Alternar tema" style="width:38px;height:38px;">
+          <!-- preenchido pelo JS -->
+        </button>
+
+        <!-- notificações -->
+        <div class="header-dropdown-wrap">
+          <button class="header-icon-btn" id="notifBtn" title="Notificações">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="notif-dot"></span>
+          </button>
+          <div class="dropdown-menu" id="notifDropdown" style="min-width:280px;">
+            <div class="dd-header">
+              <span class="dd-name">Notificações</span>
+            </div>
+            <div class="notif-list">
+              <div class="notif-item">
+                <div class="notif-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="notif-text">Bem-vindo ao WF Tasks!</p>
+                  <p class="notif-time">Comece criando sua primeira tarefa.</p>
+                </div>
+              </div>
+              <div class="notif-item">
+                <div class="notif-icon" style="background:var(--warning-bg);color:var(--warning)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div>
+                  <p class="notif-text">Dica: arraste tarefas entre dias!</p>
+                  <p class="notif-time">Use drag & drop no quadro semanal.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- usuário -->
+        <div class="header-dropdown-wrap">
+          <button class="user-btn" id="userAvatarBtn">
+            <span id="userAvatar">??</span>
+          </button>
+          <div class="dropdown-menu" id="userDropdown">
+            <div class="dd-header">
+              <p class="dd-name" id="headerUserName">Usuário</p>
+            </div>
+            <button class="dd-item" onclick="WFDashboard.navigate('settings'); document.getElementById('userDropdown').classList.remove('show')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Configurações
+            </button>
+            <button class="dd-item danger" onclick="WFAuth.logout()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Conteúdo ────────────────────────────────── -->
+    <main class="main-content">
+
+      <!-- ═══ SEÇÃO: DASHBOARD ═══════════════════════════ -->
+      <section class="app-section active" data-section="dashboard">
+
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Dashboard</h2>
+            <p class="section-sub">Visão geral da sua semana</p>
+          </div>
+          <button class="btn btn-primary" onclick="WFDashboard.openCreateModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Tarefa
+          </button>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="summary-cards">
+          <div class="sum-card">
+            <div class="sum-card-icon ic-total">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </div>
+            <div class="sum-card-info">
+              <div class="sum-card-value" id="cardTotal">0</div>
+              <div class="sum-card-label">Total de tarefas</div>
+            </div>
+          </div>
+          <div class="sum-card">
+            <div class="sum-card-icon ic-done">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="sum-card-info">
+              <div class="sum-card-value" id="cardConcluidas">0</div>
+              <div class="sum-card-label">Concluídas</div>
+            </div>
+          </div>
+          <div class="sum-card">
+            <div class="sum-card-icon ic-progress">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="sum-card-info">
+              <div class="sum-card-value" id="cardAndamento">0</div>
+              <div class="sum-card-label">Em andamento</div>
+            </div>
+          </div>
+          <div class="sum-card">
+            <div class="sum-card-icon ic-pending">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div class="sum-card-info">
+              <div class="sum-card-value" id="cardPendentes">0</div>
+              <div class="sum-card-label">Pendentes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quadro semanal -->
+        <div class="weekly-header">
+          <h3 class="weekly-title">Quadro Semanal</h3>
+          <span style="font-size:.8rem;color:var(--text-faint)">Arraste e solte para mover tarefas entre dias</span>
+        </div>
+        <div class="weekly-board" id="weeklyBoard">
+          <!-- gerado pelo JS -->
+        </div>
+
+      </section>
+
+      <!-- ═══ SEÇÃO: TAREFAS ══════════════════════════════ -->
+      <section class="app-section" data-section="tasks">
+
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Tarefas</h2>
+            <p class="section-sub">Lista completa com filtros</p>
+          </div>
+          <button class="btn btn-primary" onclick="WFDashboard.openCreateModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Tarefa
+          </button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="tasks-toolbar">
+          <div class="filter-group">
+            <span class="filter-group-label">Prioridade:</span>
+            <button class="filter-chip" data-ftype="priority" data-fval="alta"
+              onclick="WFDashboard.setFilter('priority','alta')">Alta</button>
+            <button class="filter-chip" data-ftype="priority" data-fval="media"
+              onclick="WFDashboard.setFilter('priority','media')">Média</button>
+            <button class="filter-chip" data-ftype="priority" data-fval="baixa"
+              onclick="WFDashboard.setFilter('priority','baixa')">Baixa</button>
+          </div>
+          <div class="filter-group">
+            <span class="filter-group-label">Status:</span>
+            <button class="filter-chip" data-ftype="status" data-fval="pendente"
+              onclick="WFDashboard.setFilter('status','pendente')">Pendente</button>
+            <button class="filter-chip" data-ftype="status" data-fval="andamento"
+              onclick="WFDashboard.setFilter('status','andamento')">Em andamento</button>
+            <button class="filter-chip" data-ftype="status" data-fval="concluida"
+              onclick="WFDashboard.setFilter('status','concluida')">Concluída</button>
+          </div>
+          <div class="filter-group">
+            <span class="filter-group-label">Dia:</span>
+            <button class="filter-chip" data-ftype="day" data-fval="segunda"
+              onclick="WFDashboard.setFilter('day','segunda')">Seg</button>
+            <button class="filter-chip" data-ftype="day" data-fval="terca"
+              onclick="WFDashboard.setFilter('day','terca')">Ter</button>
+            <button class="filter-chip" data-ftype="day" data-fval="quarta"
+              onclick="WFDashboard.setFilter('day','quarta')">Qua</button>
+            <button class="filter-chip" data-ftype="day" data-fval="quinta"
+              onclick="WFDashboard.setFilter('day','quinta')">Qui</button>
+            <button class="filter-chip" data-ftype="day" data-fval="sexta"
+              onclick="WFDashboard.setFilter('day','sexta')">Sex</button>
+            <button class="filter-chip" data-ftype="day" data-fval="sabado"
+              onclick="WFDashboard.setFilter('day','sabado')">Sáb</button>
+            <button class="filter-chip" data-ftype="day" data-fval="domingo"
+              onclick="WFDashboard.setFilter('day','domingo')">Dom</button>
+          </div>
+        </div>
+
+        <div id="taskListWrap">
+          <!-- gerado pelo JS -->
+        </div>
+
+      </section>
+
+      <!-- ═══ SEÇÃO: CALENDÁRIO ═══════════════════════════ -->
+      <section class="app-section" data-section="calendar">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Calendário</h2>
+            <p class="section-sub">Visualize suas tarefas no calendário mensal</p>
+          </div>
+        </div>
+        <div id="calendarWrap">
+          <!-- gerado pelo JS -->
+        </div>
+      </section>
+
+      <!-- ═══ SEÇÃO: PRIORIDADES ══════════════════════════ -->
+      <section class="app-section" data-section="priorities">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Prioridades</h2>
+            <p class="section-sub">Tarefas agrupadas por nível de prioridade</p>
+          </div>
+          <button class="btn btn-primary" onclick="WFDashboard.openCreateModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Tarefa
+          </button>
+        </div>
+        <div id="prioritiesWrap">
+          <!-- gerado pelo JS -->
+        </div>
+      </section>
+
+      <!-- ═══ SEÇÃO: RELATÓRIOS ═══════════════════════════ -->
+      <section class="app-section" data-section="reports">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Relatórios</h2>
+            <p class="section-sub">Estatísticas e produtividade da semana</p>
+          </div>
+        </div>
+        <div id="reportsWrap">
+          <!-- gerado pelo JS -->
+        </div>
+      </section>
+
+      <!-- ═══ SEÇÃO: CONFIGURAÇÕES ════════════════════════ -->
+      <section class="app-section" data-section="settings">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Configurações</h2>
+            <p class="section-sub">Personalize sua experiência</p>
+          </div>
+        </div>
+
+        <div class="settings-grid">
+
+          <!-- Perfil -->
+          <div class="set-card">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:.4rem"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Perfil
+            </h3>
+            <div class="set-avatar-row">
+              <div class="set-avatar" id="settingsAvatar">??</div>
+              <div>
+                <p style="font-size:.82rem;color:var(--text-muted);">Foto de perfil</p>
+                <p style="font-size:.75rem;color:var(--text-faint);">Avatar com iniciais do nome</p>
+              </div>
+            </div>
+            <div class="set-fields">
+              <div class="form-group">
+                <label class="form-label" for="setName">Nome</label>
+                <input class="form-control" type="text" id="setName" placeholder="Seu nome">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setEmail">E-mail</label>
+                <input class="form-control" type="email" id="setEmail" placeholder="seu@email.com" disabled
+                  style="opacity:.6;cursor:not-allowed;">
+              </div>
+              <button class="btn btn-primary" onclick="WFDashboard.saveProfile()">Salvar perfil</button>
+            </div>
+          </div>
+
+          <!-- Senha -->
+          <div class="set-card">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:.4rem"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Alterar Senha
+            </h3>
+            <div class="set-fields">
+              <div class="form-group">
+                <label class="form-label" for="setCurPwd">Senha atual</label>
+                <input class="form-control" type="password" id="setCurPwd" placeholder="••••••••">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setNewPwd">Nova senha</label>
+                <input class="form-control" type="password" id="setNewPwd" placeholder="Mínimo 6 caracteres">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setConPwd">Confirmar nova senha</label>
+                <input class="form-control" type="password" id="setConPwd" placeholder="Repita a senha">
+              </div>
+              <button class="btn btn-primary" onclick="WFDashboard.savePassword()">Alterar senha</button>
+            </div>
+          </div>
+
+          <!-- Aparência -->
+          <div class="set-card">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:.4rem"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+              Aparência
+            </h3>
+            <div class="set-fields">
+              <div class="form-group">
+                <label class="form-label" for="setTheme">Tema</label>
+                <select class="form-control" id="setTheme">
+                  <option value="light">☀️ Modo claro</option>
+                  <option value="dark">🌙 Modo escuro</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="WFDashboard.applyTheme()">Aplicar tema</button>
+            </div>
+          </div>
+
+          <!-- Dados -->
+          <div class="set-card">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:.4rem"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              Dados
+            </h3>
+            <div class="set-fields">
+              <p style="font-size:.83rem;color:var(--text-muted);line-height:1.6;">
+                Todos os dados são armazenados localmente no seu navegador via LocalStorage.
+                Limpar os dados remove todas as tarefas permanentemente.
+              </p>
+              <button class="btn btn-danger" onclick="clearAllTasks()">Limpar todas as tarefas</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div><!-- /main-area -->
+
+  <!-- ════════════════════════════════════════════════
+       MODAL — NOVA / EDITAR TAREFA
+  ════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="taskModal">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Nova Tarefa</h3>
+        <button class="modal-close" onclick="WFDashboard.closeModal()" title="Fechar">✕</button>
+      </div>
+
+      <form id="taskForm" novalidate>
+        <div class="modal-body">
+          <div id="formError" class="form-error" style="display:none;"></div>
+          <div class="modal-fields">
+
+            <div class="form-group">
+              <label class="form-label" for="fTitle">Título <span style="color:var(--danger)">*</span></label>
+              <input class="form-control" type="text" id="fTitle" placeholder="O que precisa ser feito?" required maxlength="120">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="fDescription">Descrição</label>
+              <textarea class="form-control" id="fDescription" placeholder="Detalhes opcionais…" rows="3"
+                style="resize:vertical;"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fDay">Dia da semana <span style="color:var(--danger)">*</span></label>
+                <select class="form-control" id="fDay" required>
+                  <option value="">Selecione…</option>
+                  <option value="segunda">Segunda-feira</option>
+                  <option value="terca">Terça-feira</option>
+                  <option value="quarta">Quarta-feira</option>
+                  <option value="quinta">Quinta-feira</option>
+                  <option value="sexta">Sexta-feira</option>
+                  <option value="sabado">Sábado</option>
+                  <option value="domingo">Domingo</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="fDateGroup">
+                <label class="form-label" for="fDate">Data <span style="color:var(--danger)">*</span></label>
+                <input class="form-control" type="date" id="fDate" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label" for="fRecurring">
+                <input type="checkbox" id="fRecurring">
+                Repetir em <strong id="fRecurringDayLabel">toda semana</strong> (marca todas as ocorrências no calendário)
+              </label>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="fPriority">Prioridade <span style="color:var(--danger)">*</span></label>
+                <select class="form-control" id="fPriority" required>
+                  <option value="alta">🔴 Alta</option>
+                  <option value="media" selected>🟡 Média</option>
+                  <option value="baixa">🟢 Baixa</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="fStatus">Status <span style="color:var(--danger)">*</span></label>
+                <select class="form-control" id="fStatus" required>
+                  <option value="pendente" selected>⏳ Pendente</option>
+                  <option value="andamento">🔄 Em andamento</option>
+                  <option value="concluida">✅ Concluída</option>
+                </select>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" onclick="WFDashboard.closeModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar tarefa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       TOAST CONTAINER
+  ════════════════════════════════════════════════ -->
+  <div id="toastBox"></div>
+
+</div><!-- /app -->
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/tasks.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  // Limpar tarefas (ação destrutiva)
+  function clearAllTasks() {
+    if (!confirm('Tem certeza? Esta ação remove TODAS as tarefas permanentemente.')) return;
+    WFStorage.saveTasks([]);
+    WFDashboard._renderSection(WFDashboard.currentSection);
+    WFDashboard.updateCards();
+    WFDashboard.toast('Todas as tarefas foram removidas.', 'info');
+  }
+
+  // Atualizar avatar na aba de configurações
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = WFAuth.getCurrentUser();
+    if (user) {
+      const initials = user.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
+      const av = document.getElementById('settingsAvatar');
+      if (av) av.textContent = initials;
+    }
+  });
+</script>
+</body>
+</html>

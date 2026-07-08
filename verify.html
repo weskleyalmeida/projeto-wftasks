@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verificar Conta — WF Tasks</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/verify.css">
+</head>
+<body>
+<div class="vf-page">
+  <div class="vf-card scale-in">
+
+    <!-- ── Brand ── -->
+    <div class="vf-brand">
+      <img src="assets/logo.svg" width="38" height="38" alt="WF Tasks">
+      <span class="vf-brand-name">WF Tasks</span>
+    </div>
+
+    <!-- ── Passos do fluxo ── -->
+    <div class="vf-steps">
+      <div class="vf-step done">
+        <div class="vf-step-dot">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span>Cadastro</span>
+      </div>
+      <div class="vf-step-line done"></div>
+      <div class="vf-step active">
+        <div class="vf-step-dot">2</div>
+        <span>Verificação</span>
+      </div>
+      <div class="vf-step-line"></div>
+      <div class="vf-step" id="stepDone">
+        <div class="vf-step-dot">3</div>
+        <span>Pronto</span>
+      </div>
+    </div>
+
+    <!-- ── Ícone ── -->
+    <div class="vf-icon-outer">
+      <div class="vf-icon-ring">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          <circle cx="12" cy="16.5" r="1.2" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ── Título ── -->
+    <h1 class="vf-title">Confirmar Cadastro</h1>
+    <p class="vf-sub">
+      Enviamos um código de 6 dígitos para o seu e-mail.<br>
+      Insira-o abaixo para ativar sua conta.
+    </p>
+
+    <!-- ── E-mail ── -->
+    <div class="vf-email-chip">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      <span id="emailDisplay">carregando…</span>
+    </div>
+
+
+    <!-- ── Alertas ── -->
+    <div class="vf-alert vf-alert-error"   id="alertError"></div>
+    <div class="vf-alert vf-alert-success" id="alertSuccess"></div>
+
+    <!-- ── Inputs de 6 dígitos ── -->
+    <div class="vf-code-wrap">
+      <div class="vf-code-inputs" id="codeInputs">
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+        <span class="vf-code-sep">—</span>
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+        <input class="vf-code-digit" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off" placeholder="·">
+      </div>
+    </div>
+
+    <!-- ── Botão confirmar ── -->
+    <button class="btn-auth" id="confirmBtn" onclick="confirmCode()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" style="display:inline;vertical-align:-2px;margin-right:.3rem">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Confirmar Cadastro
+    </button>
+
+    <!-- ── Timer + Reenviar ── -->
+    <div class="vf-timer-wrap">
+
+      <div class="vf-timer" id="timerRow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        Código expira em&nbsp;<strong class="vf-timer-count green" id="timerCount">05:00</strong>
+      </div>
+
+      <div class="vf-expired-msg" id="expiredRow" style="display:none">
+        ⚠ Código expirado. Solicite um novo código abaixo.
+      </div>
+
+      <button class="vf-resend-btn" id="resendBtn" disabled onclick="resendCode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 .49-3.08"/>
+        </svg>
+        Reenviar Código
+      </button>
+
+      <p class="vf-resend-hint" id="resendHint"></p>
+
+    </div>
+
+    <!-- ── Voltar ── -->
+    <a href="login.html" class="vf-back">← Voltar ao login</a>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('-1iKla31AIpy_teRw');</script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+/* ──────────────────────────────────────────────────────────
+   WF Tasks — Lógica da página de verificação
+────────────────────────────────────────────────────────── */
+
+let pendingEmail    = null;
+let isExpired       = false;
+let timerInterval   = null;
+let resendAvailAt   = 0;   // timestamp: quando o botão Reenviar fica liberado
+
+// ── Inicialização ──────────────────────────────────────────
+
+function init() {
+  // Tema salvo
+  document.documentElement.setAttribute('data-theme', WFStorage.getTheme());
+
+  // Recuperar e-mail pendente
+  pendingEmail = WFStorage.getPendingEmail();
+  if (!pendingEmail) { window.location.href = 'login.html'; return; }
+
+  const user = WFStorage.getUserByEmail(pendingEmail);
+  if (!user)              { window.location.href = 'login.html'; return; }
+  if (user.status === 'ativo') { window.location.href = 'login.html'; return; }
+
+  // Exibir e-mail
+  document.getElementById('emailDisplay').textContent = pendingEmail;
+
+  localStorage.removeItem('wf_email_sent');
+  localStorage.removeItem('wf_email_error');
+
+  // Cooldown do reenvio: 60 s a partir de agora
+  resendAvailAt = Date.now() + 60 * 1000;
+
+  // Iniciar contador de expiração
+  startTimer(user.codeExpiresAt);
+
+  // Configurar inputs
+  setupDigitInputs();
+  document.querySelectorAll('.vf-code-digit')[0]?.focus();
+}
+
+// ── Timer de expiração + cooldown de reenvio ───────────────
+
+function startTimer(expiresAtISO) {
+  clearInterval(timerInterval);
+  isExpired = false;
+
+  const endTime = new Date(expiresAtISO).getTime();
+
+  function tick() {
+    const now        = Date.now();
+    const timeLeft   = endTime - now;
+    const resendLeft = Math.max(0, Math.ceil((resendAvailAt - now) / 1000));
+
+    // ─ Botão reenviar ─
+    const btn   = document.getElementById('resendBtn');
+    const hint  = document.getElementById('resendHint');
+    if (resendLeft > 0 && !isExpired) {
+      btn.disabled      = true;
+      hint.textContent  = `Disponível em ${resendLeft}s`;
+    } else if (!isExpired) {
+      btn.disabled      = false;
+      hint.textContent  = '';
+    }
+
+    // ─ Timer de expiração ─
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      isExpired = true;
+
+      document.getElementById('timerRow').style.display    = 'none';
+      document.getElementById('expiredRow').style.display  = 'block';
+      document.getElementById('confirmBtn').disabled       = true;
+      btn.disabled    = false;
+      hint.textContent = '';
+      return;
+    }
+
+    const mins    = Math.floor(timeLeft / 60000);
+    const secs    = Math.floor((timeLeft % 60000) / 1000);
+    const label   = String(mins).padStart(2,'0') + ':' + String(secs).padStart(2,'0');
+    const counter = document.getElementById('timerCount');
+    counter.textContent = label;
+
+    // Cor progressiva conforme tempo restante
+    counter.className = 'vf-timer-count ' +
+      (timeLeft > 120000 ? 'green' : timeLeft > 60000 ? 'yellow' : 'red');
+  }
+
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+// ── Inputs de 6 dígitos ────────────────────────────────────
+
+function setupDigitInputs() {
+  const digits = Array.from(document.querySelectorAll('.vf-code-digit'));
+
+  digits.forEach((inp, i) => {
+
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace') {
+        if (!inp.value && i > 0) {
+          digits[i - 1].value = '';
+          digits[i - 1].classList.remove('filled');
+          digits[i - 1].focus();
+        }
+        inp.classList.remove('filled');
+      }
+      if (e.key === 'ArrowLeft'  && i > 0)              digits[i-1].focus();
+      if (e.key === 'ArrowRight' && i < digits.length-1) digits[i+1].focus();
+      if (e.key === 'Enter') confirmCode();
+    });
+
+    inp.addEventListener('input', e => {
+      // Aceita apenas dígitos
+      const val = e.target.value.replace(/\D/g, '');
+      inp.value = val ? val.slice(-1) : '';
+      inp.classList.toggle('filled', !!inp.value);
+
+      // Avançar para o próximo
+      if (inp.value && i < digits.length - 1) digits[i + 1].focus();
+      clearAlerts();
+    });
+
+    inp.addEventListener('paste', e => {
+      e.preventDefault();
+      const raw    = (e.clipboardData || window.clipboardData).getData('text');
+      const nums   = raw.replace(/\D/g, '').slice(0, 6);
+      nums.split('').forEach((d, di) => {
+        if (digits[di]) {
+          digits[di].value = d;
+          digits[di].classList.add('filled');
+        }
+      });
+      const nextFocus = Math.min(nums.length, digits.length - 1);
+      digits[nextFocus].focus();
+      clearAlerts();
+    });
+
+    inp.addEventListener('focus', () => inp.select());
+  });
+}
+
+function getEnteredCode() {
+  return Array.from(document.querySelectorAll('.vf-code-digit'))
+    .map(i => i.value).join('');
+}
+
+// ── Confirmar código ───────────────────────────────────────
+
+function confirmCode() {
+  if (isExpired) {
+    showAlert('error', 'O código expirou. Clique em "Reenviar Código" para obter um novo.');
+    return;
+  }
+
+  const code = getEnteredCode();
+  if (code.length < 6) {
+    showAlert('error', 'Digite todos os 6 dígitos do código de verificação.');
+    shakeInputs();
+    return;
+  }
+
+  const r = WFAuth.verifyCode(pendingEmail, code);
+
+  if (r.success) {
+    // Sucesso: marcar passo 3, desabilitar controles, redirecionar
+    clearInterval(timerInterval);
+    document.getElementById('stepDone').classList.add('done');
+    document.getElementById('confirmBtn').disabled  = true;
+    document.getElementById('resendBtn').disabled   = true;
+    document.getElementById('timerRow').style.display = 'none';
+
+    showAlert('success', '✓ Conta confirmada com sucesso! Redirecionando para o login…');
+
+    setTimeout(() => window.location.href = 'login.html', 2200);
+
+  } else {
+    const msgs = {
+      invalid:        'Código incorreto. Verifique os dígitos e tente novamente.',
+      expired:        'Código expirado. Clique em "Reenviar Código".',
+      not_found:      'Conta não encontrada. Faça o cadastro novamente.',
+      already_active: 'Esta conta já está confirmada. Faça o login.'
+    };
+    showAlert('error', msgs[r.error] || 'Erro desconhecido. Tente novamente.');
+    shakeInputs();
+
+    // Limpar campos se código errado
+    if (r.error === 'invalid') {
+      document.querySelectorAll('.vf-code-digit').forEach(i => {
+        i.value = '';
+        i.classList.remove('filled');
+      });
+      document.querySelectorAll('.vf-code-digit')[0].focus();
+    }
+  }
+}
+
+// ── Reenviar código ────────────────────────────────────────
+
+function resendCode() {
+  const r = WFAuth.resendCode(pendingEmail);
+
+  if (r.success) {
+    // Atualizar demo box
+    document.getElementById('demoCode').textContent = r.code;
+
+    // Resetar interface
+    isExpired = false;
+    document.getElementById('confirmBtn').disabled        = false;
+    document.getElementById('expiredRow').style.display   = 'none';
+    document.getElementById('timerRow').style.display     = 'flex';
+
+    // Limpar campos
+    document.querySelectorAll('.vf-code-digit').forEach(i => {
+      i.value = '';
+      i.classList.remove('filled');
+    });
+    document.querySelectorAll('.vf-code-digit')[0].focus();
+
+    // Novo cooldown de 60 s para o botão Reenviar
+    resendAvailAt = Date.now() + 60 * 1000;
+
+    // Reiniciar timer com novo prazo de expiração
+    const user = WFStorage.getUserByEmail(pendingEmail);
+    startTimer(user.codeExpiresAt);
+
+    // Enviar novo código por e-mail
+    WFAuth.sendVerificationEmail(pendingEmail, user.name, r.code)
+      .then(() => {
+        showAlert('success', 'Novo código enviado para o seu e-mail!');
+      })
+      .catch(() => {
+        showAlert('error', 'Falha ao enviar o e-mail. Verifique sua conexão e tente novamente.');
+      });
+
+  } else {
+    showAlert('error', 'Erro ao gerar novo código. Tente novamente.');
+  }
+}
+
+// ── Utilitários ────────────────────────────────────────────
+
+function shakeInputs() {
+  const wrap = document.getElementById('codeInputs');
+  wrap.classList.remove('shake');
+  void wrap.offsetWidth; // força reflow para reiniciar animação
+  wrap.classList.add('shake');
+  setTimeout(() => wrap.classList.remove('shake'), 600);
+}
+
+function showAlert(type, msg) {
+  const errEl = document.getElementById('alertError');
+  const okEl  = document.getElementById('alertSuccess');
+  if (type === 'error') {
+    errEl.textContent = msg; errEl.classList.add('show');
+    okEl.classList.remove('show');
+  } else {
+    okEl.textContent  = msg; okEl.classList.add('show');
+    errEl.classList.remove('show');
+  }
+}
+
+function clearAlerts() {
+  document.getElementById('alertError').classList.remove('show');
+  document.getElementById('alertSuccess').classList.remove('show');
+}
+
+// ── Iniciar ao carregar ────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
