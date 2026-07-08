@@ -51,7 +51,7 @@ const WFTasks = {
 
   // ---------- criação ----------
 
-  create({ title, description, day, date, recurring, priority, status }) {
+  create({ title, description, day, date, time, recurring, priority, status }) {
     if (!title?.trim())
       return { success: false, error: 'Título é obrigatório.' };
     if (!this.DAYS.includes(day))
@@ -69,6 +69,7 @@ const WFTasks = {
       description: description?.trim() || '',
       day, priority, status,
       date:        recurring ? null : date,
+      time:        time?.trim() || '',
       recurring:   !!recurring,
       createdAt:   new Date().toISOString(),
       updatedAt:   new Date().toISOString()

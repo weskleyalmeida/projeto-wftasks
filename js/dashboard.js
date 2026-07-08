@@ -242,6 +242,7 @@ const WFDashboard = {
         t.description?.toLowerCase().includes(q)
       );
     }
+    tasks = [...tasks].sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
     const isToday = day === today;
     return `
       <div class="day-col${isToday ? ' is-today' : ''}" data-day="${day}"
@@ -288,6 +289,7 @@ const WFDashboard = {
           </div>
           ${task.description ? `<p class="card-desc">${_esc(task.description)}</p>` : ''}
           <div class="card-foot">
+            ${task.time ? `<span class="badge badge-day">${_esc(task.time)}</span>` : ''}
             <span class="badge ${pc}">${WFTasks.PRIORITY_LABELS[task.priority]}</span>
             <span class="badge ${sc}">${WFTasks.STATUS_LABELS[task.status]}</span>
             ${task.recurring === false && task.date
@@ -382,6 +384,7 @@ const WFDashboard = {
     day = day || WFTasks.getTodayKey();
     document.getElementById('fDay').value = day;
     document.getElementById('fDate').value = WFTasks.getDateForDay(day);
+    document.getElementById('fTime').value = '';
     document.getElementById('fRecurring').checked = false;
     document.getElementById('fPriority').value = 'media';
     document.getElementById('fStatus').value   = 'pendente';
@@ -398,6 +401,7 @@ const WFDashboard = {
     document.getElementById('fDescription').value      = task.description || '';
     document.getElementById('fDay').value              = task.day;
     document.getElementById('fDate').value             = task.date || WFTasks.getDateForDay(task.day);
+    document.getElementById('fTime').value              = task.time || '';
     document.getElementById('fRecurring').checked      = task.recurring !== false;
     document.getElementById('fPriority').value         = task.priority;
     document.getElementById('fStatus').value           = task.status;
@@ -444,6 +448,7 @@ const WFDashboard = {
       description: document.getElementById('fDescription').value.trim(),
       day:         document.getElementById('fDay').value,
       date:        document.getElementById('fDate').value,
+      time:        document.getElementById('fTime').value,
       recurring:   document.getElementById('fRecurring').checked,
       priority:    document.getElementById('fPriority').value,
       status:      document.getElementById('fStatus').value
@@ -496,6 +501,7 @@ const WFDashboard = {
           ${task.description ? `<span class="row-desc">${_esc(task.description)}</span>` : ''}
         </div>
         <div class="row-meta">
+          ${task.time ? `<span class="badge badge-day">${_esc(task.time)}</span>` : ''}
           <span class="badge ${pc}">${WFTasks.PRIORITY_LABELS[task.priority]}</span>
           <span class="badge ${sc}">${WFTasks.STATUS_LABELS[task.status]}</span>
           <span class="badge badge-day">${WFTasks.DAY_SHORT[task.day]}${task.recurring === false && task.date ? ' · ' + WFTasks.formatDateShort(task.date) : ''}</span>
@@ -563,9 +569,10 @@ const WFDashboard = {
       html += `
         <div class="cal-cell${isToday ? ' cal-today' : ''}">
           <span class="cal-num">${n}</span>
-          ${dayTasks.slice(0,3).map(t =>
-            `<div class="cal-dot ${_priorityClass(t.priority)}" title="${_esc(t.title)}">${_esc(t.title.slice(0,18))}${t.title.length>18?'…':''}</div>`
-          ).join('')}
+          ${dayTasks.slice(0,3).map(t => {
+            const prefix = t.time ? `${_esc(t.time)} ` : '';
+            return `<div class="cal-dot ${_priorityClass(t.priority)}" title="${prefix}${_esc(t.title)}">${prefix}${_esc(t.title.slice(0,18))}${t.title.length>18?'…':''}</div>`;
+          }).join('')}
           ${dayTasks.length > 3 ? `<div class="cal-more">+${dayTasks.length-3}</div>` : ''}
         </div>`;
     }
