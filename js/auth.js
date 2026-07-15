@@ -12,10 +12,10 @@ const WFAuth = {
 
     const user = WFStorage.getUserByEmail(email);
     if (!user)
-      return { success: false, error: 'E-mail não encontrado.' };
+      return { success: false, error: 'Usuário ou senha inválidos.' };
 
     if (user.password !== this._hash(password))
-      return { success: false, error: 'Senha incorreta.' };
+      return { success: false, error: 'Usuário ou senha inválidos.' };
 
     if (user.status === 'pendente') {
       WFStorage.savePendingEmail(user.email);
