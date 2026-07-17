@@ -32,7 +32,6 @@ const WFTasks = {
   // ---------- leitura ----------
 
   getAll()        { return WFStorage.getTasks(); },
-  getByDay(day)   { return WFStorage.getTasks().filter(t => t.day === day); },
 
   getFiltered({ day = null, priority = null, status = null, search = '' } = {}) {
     let list = WFStorage.getTasks();

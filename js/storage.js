@@ -62,6 +62,11 @@ const WFStorage = {
     return users[idx];
   },
 
+  deleteUser(email) {
+    const users = this.getUsers().filter(u => u.email.toLowerCase() !== email.toLowerCase());
+    return this.saveUsers(users);
+  },
+
   // ---------- sessão ----------
 
   getSession()  { return this.get(this.KEYS.SESSION); },

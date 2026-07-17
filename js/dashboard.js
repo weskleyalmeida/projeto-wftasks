@@ -75,11 +75,65 @@ const WFDashboard = {
   initUser() {
     const u = WFAuth.getCurrentUser();
     if (!u) return;
-    const initials = u.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
-    const av = document.getElementById('userAvatar');
-    if (av) av.textContent = initials;
+    this._renderAvatar(document.getElementById('userAvatar'), u);
     const nm = document.getElementById('headerUserName');
     if (nm) nm.textContent = u.name;
+  },
+
+  // ─── Avatar (header + configurações) ────────────────
+
+  _renderAvatar(el, user) {
+    if (!el || !user) return;
+    if (user.avatar) {
+      el.innerHTML = `<img src="${user.avatar}" alt="Foto de perfil">`;
+    } else {
+      const initials = user.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
+      el.textContent = initials;
+    }
+  },
+
+  onAvatarFileSelected(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.toast('Selecione um arquivo de imagem.', 'error');
+      input.value = '';
+      return;
+    }
+
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => {
+      img.onload = () => {
+        const size = 160;
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const scale = Math.max(size / img.width, size / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', .85);
+
+        const r = WFAuth.updateAvatar(dataUrl);
+        if (r.success) {
+          this.initUser();
+          this.loadSettings();
+          this.toast('Foto de perfil atualizada!', 'success');
+        } else this.toast(r.error, 'error');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  },
+
+  removeAvatar() {
+    const r = WFAuth.updateAvatar(null);
+    if (r.success) {
+      this.initUser();
+      this.loadSettings();
+      this.toast('Foto de perfil removida.', 'info');
+    } else this.toast(r.error, 'error');
   },
 
   // ─── Eventos ────────────────────────────────────────
@@ -188,7 +242,7 @@ const WFDashboard = {
 
   _renderSection(s) {
     switch (s) {
-      case 'dashboard':   this.updateCards(); this.renderWeekly(); break;
+      case 'dashboard':   this.updateCards(); this.renderWeekly(); this.renderUpcoming(); break;
       case 'tasks':       this.renderTaskList(); break;
       case 'calendar':    this.renderCalendar(); break;
       case 'priorities':  this.renderPriorities(); break;
@@ -234,7 +288,10 @@ const WFDashboard = {
   },
 
   _dayColumn(day, today) {
-    let tasks = WFTasks.getByDay(day);
+    const dateForDay = WFTasks.getDateForDay(day);
+    let tasks = WFTasks.getAll().filter(t =>
+      t.recurring !== false ? t.day === day : t.date === dateForDay
+    );
     if (this.filter.search.trim()) {
       const q = this.filter.search.toLowerCase();
       tasks = tasks.filter(t =>
@@ -253,7 +310,7 @@ const WFDashboard = {
         <div class="day-col-header">
           <div class="day-col-title">
             <span class="day-abbr">${WFTasks.DAY_SHORT[day]}</span>
-            <span class="day-date">${WFTasks.formatDateShort(WFTasks.getDateForDay(day))}</span>
+            <span class="day-date">${WFTasks.formatDateShort(dateForDay)}</span>
             ${isToday ? '<span class="today-chip">Hoje</span>' : ''}
           </div>
           <span class="day-count">${tasks.length}</span>
@@ -301,6 +358,24 @@ const WFDashboard = {
           </div>
         </div>
       </div>`;
+  },
+
+  // ═══════════════════════════════════════════════════
+  //  PRÓXIMAS TAREFAS (a partir da próxima semana)
+  // ═══════════════════════════════════════════════════
+
+  renderUpcoming() {
+    const wrap = document.getElementById('upcomingWrap');
+    if (!wrap) return;
+    const endOfWeek = WFTasks.getDateForDay('domingo');
+    const upcoming = WFTasks.getAll()
+      .filter(t => t.recurring === false && t.date && t.date > endOfWeek && t.status !== 'concluida')
+      .sort((a, b) => (a.date + (a.time || '99:99')).localeCompare(b.date + (b.time || '99:99')))
+      .slice(0, 8);
+
+    wrap.innerHTML = upcoming.length === 0
+      ? '<p class="no-tasks-msg">Nenhuma tarefa agendada para as próximas semanas.</p>'
+      : `<div class="task-rows">${upcoming.map(t => this._taskRow(t)).join('')}</div>`;
   },
 
   // ═══════════════════════════════════════════════════
@@ -384,6 +459,20 @@ const WFDashboard = {
     day = day || WFTasks.getTodayKey();
     document.getElementById('fDay').value = day;
     document.getElementById('fDate').value = WFTasks.getDateForDay(day);
+    document.getElementById('fTime').value = '';
+    document.getElementById('fRecurring').checked = false;
+    document.getElementById('fPriority').value = 'media';
+    document.getElementById('fStatus').value   = 'pendente';
+    this._updateDateGroupVisibility();
+    this._showModal();
+  },
+
+  openCreateModalForDate(dateStr) {
+    this.editingId = null;
+    document.getElementById('modalTitle').textContent = 'Nova Tarefa';
+    document.getElementById('taskForm').reset();
+    document.getElementById('fDay').value = WFTasks.dayKeyFromDate(dateStr);
+    document.getElementById('fDate').value = dateStr;
     document.getElementById('fTime').value = '';
     document.getElementById('fRecurring').checked = false;
     document.getElementById('fPriority').value = 'media';
@@ -567,11 +656,13 @@ const WFDashboard = {
       );
       const isToday  = dt.getTime() === today.getTime();
       html += `
-        <div class="cal-cell${isToday ? ' cal-today' : ''}">
+        <div class="cal-cell${isToday ? ' cal-today' : ''}" title="Adicionar tarefa em ${n}/${month+1}"
+             onclick="WFDashboard.openCreateModalForDate('${iso}')">
           <span class="cal-num">${n}</span>
           ${dayTasks.slice(0,3).map(t => {
             const prefix = t.time ? `${_esc(t.time)} ` : '';
-            return `<div class="cal-dot ${_priorityClass(t.priority)}" title="${prefix}${_esc(t.title)}">${prefix}${_esc(t.title.slice(0,18))}${t.title.length>18?'…':''}</div>`;
+            return `<div class="cal-dot ${_priorityClass(t.priority)}" title="${prefix}${_esc(t.title)}"
+                         onclick="event.stopPropagation(); WFDashboard.openEditModal('${t.id}')">${prefix}${_esc(t.title.slice(0,18))}${t.title.length>18?'…':''}</div>`;
           }).join('')}
           ${dayTasks.length > 3 ? `<div class="cal-more">+${dayTasks.length-3}</div>` : ''}
         </div>`;
@@ -692,6 +783,21 @@ const WFDashboard = {
       </div>`;
   },
 
+  // ─── Exportar PDF ────────────────────────────────────
+
+  exportReportPDF() {
+    const current = document.documentElement.getAttribute('data-theme');
+    if (current === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      const restore = () => {
+        document.documentElement.setAttribute('data-theme', current);
+        window.removeEventListener('afterprint', restore);
+      };
+      window.addEventListener('afterprint', restore);
+    }
+    window.print();
+  },
+
   // ═══════════════════════════════════════════════════
   //  CONFIGURAÇÕES
   // ═══════════════════════════════════════════════════
@@ -705,6 +811,9 @@ const WFDashboard = {
     if (n) n.value = u.name;
     if (e) e.value = u.email;
     if (t) t.value = WFStorage.getTheme();
+    this._renderAvatar(document.getElementById('settingsAvatar'), u);
+    const removeBtn = document.getElementById('setAvatarRemoveBtn');
+    if (removeBtn) removeBtn.style.display = u.avatar ? '' : 'none';
   },
 
   saveProfile() {
@@ -726,6 +835,18 @@ const WFDashboard = {
         const el = document.getElementById(id); if (el) el.value = '';
       });
       this.toast('Senha alterada!', 'success');
+    } else this.toast(r.error, 'error');
+  },
+
+  deleteAccount() {
+    const pwd = document.getElementById('setDeletePwd')?.value;
+    if (!pwd) { this.toast('Informe sua senha para confirmar.', 'error'); return; }
+    if (!confirm('Tem certeza? Esta ação é permanente e não pode ser desfeita.')) return;
+
+    const r = WFAuth.deleteAccount(pwd);
+    if (r.success) {
+      this.toast('Conta excluída. Até logo!', 'info');
+      setTimeout(() => { window.location.href = 'login.html'; }, 1200);
     } else this.toast(r.error, 'error');
   },
 

@@ -255,6 +255,7 @@
   transition: transform var(--transition), box-shadow var(--transition);
 }
 .user-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(37,99,235,.35); }
+.user-btn img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
 /* Dropdown menus */
 .header-dropdown-wrap { position: relative; }
@@ -889,7 +890,8 @@
   border-color: var(--primary);
   background: var(--primary-light);
 }
-.cal-cell:not(.empty):hover { box-shadow: var(--shadow-sm); }
+.cal-cell:not(.empty) { cursor: pointer; }
+.cal-cell:not(.empty):hover { box-shadow: var(--shadow-sm); border-color: var(--primary); }
 
 .cal-num {
   font-size: .78rem;
@@ -912,7 +914,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
 }
+.cal-dot:hover { filter: brightness(0.93); }
 .cal-dot.priority-high   { background: #fee2e2; color: #dc2626; }
 .cal-dot.priority-medium { background: #fef3c7; color: #d97706; }
 .cal-dot.priority-low    { background: #dcfce7; color: #16a34a; }
@@ -1099,6 +1103,9 @@
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
 }
+.set-card-danger { border-color: var(--danger); }
+.set-card-danger h3 { color: var(--danger); border-bottom-color: var(--danger-bg); }
+
 .set-card h3 {
   font-size: .95rem;
   font-weight: 700;
@@ -1125,7 +1132,9 @@
   font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
+  overflow: hidden;
 }
+.set-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ── Sidebar overlay (mobile) ─────────────────────────────── */
 .sidebar-overlay {
@@ -1240,4 +1249,13 @@
 
   .header-actions .header-icon-btn { width: 32px; height: 32px; }
   .user-btn { width: 32px; height: 32px; font-size: .72rem; }
+}
+
+/* ── Impressão (exportar relatório em PDF) ─────────────────── */
+@media print {
+  .sidebar, .sidebar-overlay, .app-header, #toastBox,
+  .modal-backdrop, .btn-export-pdf { display: none !important; }
+  .main-area    { margin-left: 0 !important; }
+  .main-content { padding: 0 !important; }
+  body, .app    { background: #fff !important; }
 }

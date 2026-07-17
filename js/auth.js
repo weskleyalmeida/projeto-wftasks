@@ -104,6 +104,17 @@ const WFAuth = {
     return { success: true, user: updated };
   },
 
+  updateAvatar(dataUrl) {
+    const session = WFStorage.getSession();
+    if (!session) return { success: false, error: 'Sessão expirada.' };
+
+    const updated = WFStorage.updateUser(session.email, { avatar: dataUrl || null });
+    if (!updated) return { success: false, error: 'Erro ao atualizar.' };
+
+    WFStorage.saveSession(updated);
+    return { success: true, user: updated };
+  },
+
   updatePassword(current, next) {
     const session = WFStorage.getSession();
     if (!session) return { success: false, error: 'Sessão expirada.' };
@@ -118,6 +129,21 @@ const WFAuth = {
       return { success: false, error: 'A nova senha deve ter no mínimo 6 caracteres.' };
 
     WFStorage.updateUser(session.email, { password: this._hash(next) });
+    return { success: true };
+  },
+
+  deleteAccount(password) {
+    const session = WFStorage.getSession();
+    if (!session) return { success: false, error: 'Sessão expirada.' };
+
+    const user = WFStorage.getUserByEmail(session.email);
+    if (!user) return { success: false, error: 'Usuário não encontrado.' };
+
+    if (user.password !== this._hash(password))
+      return { success: false, error: 'Senha incorreta.' };
+
+    WFStorage.deleteUser(session.email);
+    WFStorage.clearSession();
     return { success: true };
   },
 

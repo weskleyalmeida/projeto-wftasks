@@ -266,6 +266,15 @@
           <!-- gerado pelo JS -->
         </div>
 
+        <!-- Próximas tarefas -->
+        <div class="weekly-header" style="margin-top:1.75rem;">
+          <h3 class="weekly-title">Próximas Tarefas</h3>
+          <span style="font-size:.8rem;color:var(--text-faint)">Agendadas a partir da próxima semana</span>
+        </div>
+        <div id="upcomingWrap">
+          <!-- gerado pelo JS -->
+        </div>
+
       </section>
 
       <!-- ═══ SEÇÃO: TAREFAS ══════════════════════════════ -->
@@ -364,6 +373,10 @@
             <h2 class="section-title">Relatórios</h2>
             <p class="section-sub">Estatísticas e produtividade da semana</p>
           </div>
+          <button class="btn btn-primary btn-export-pdf" onclick="WFDashboard.exportReportPDF()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar PDF
+          </button>
         </div>
         <div id="reportsWrap">
           <!-- gerado pelo JS -->
@@ -391,7 +404,13 @@
               <div class="set-avatar" id="settingsAvatar">??</div>
               <div>
                 <p style="font-size:.82rem;color:var(--text-muted);">Foto de perfil</p>
-                <p style="font-size:.75rem;color:var(--text-faint);">Avatar com iniciais do nome</p>
+                <p style="font-size:.75rem;color:var(--text-faint);margin-bottom:.5rem;">JPG ou PNG, a imagem será recortada em formato circular.</p>
+                <input type="file" id="setAvatarInput" accept="image/*" style="display:none"
+                  onchange="WFDashboard.onAvatarFileSelected(this)">
+                <button type="button" class="btn btn-secondary" style="padding:.35rem .8rem;font-size:.8rem;"
+                  onclick="document.getElementById('setAvatarInput').click()">Alterar foto</button>
+                <button type="button" id="setAvatarRemoveBtn" class="btn btn-secondary" style="display:none;padding:.35rem .8rem;font-size:.8rem;"
+                  onclick="WFDashboard.removeAvatar()">Remover</button>
               </div>
             </div>
             <div class="set-fields">
@@ -461,6 +480,24 @@
                 Limpar os dados remove todas as tarefas permanentemente.
               </p>
               <button class="btn btn-danger" onclick="clearAllTasks()">Limpar todas as tarefas</button>
+            </div>
+          </div>
+
+          <!-- Zona de perigo -->
+          <div class="set-card set-card-danger">
+            <h3>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-2px;margin-right:.4rem"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Zona de Perigo
+            </h3>
+            <div class="set-fields">
+              <p style="font-size:.83rem;color:var(--text-muted);line-height:1.6;">
+                Excluir sua conta é permanente. Seu cadastro será removido e você precisará se registrar novamente para usar o WF Tasks.
+              </p>
+              <div class="form-group">
+                <label class="form-label" for="setDeletePwd">Confirme sua senha</label>
+                <input class="form-control" type="password" id="setDeletePwd" placeholder="Sua senha atual">
+              </div>
+              <button class="btn btn-danger" onclick="WFDashboard.deleteAccount()">Excluir minha conta</button>
             </div>
           </div>
 
@@ -581,15 +618,6 @@
     WFDashboard.toast('Todas as tarefas foram removidas.', 'info');
   }
 
-  // Atualizar avatar na aba de configurações
-  document.addEventListener('DOMContentLoaded', () => {
-    const user = WFAuth.getCurrentUser();
-    if (user) {
-      const initials = user.name.split(' ').map(n => n[0]).slice(0,2).join('').toUpperCase();
-      const av = document.getElementById('settingsAvatar');
-      if (av) av.textContent = initials;
-    }
-  });
 </script>
 </body>
 </html>
